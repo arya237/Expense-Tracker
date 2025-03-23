@@ -6,5 +6,5 @@ import (
 )
 
 func main(){
-
+	log.Print(database.DB)
 }
