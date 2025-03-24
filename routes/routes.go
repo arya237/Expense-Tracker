@@ -10,6 +10,7 @@ func SetupRoutes(engine *gin.Engine){
 
 	user := engine.Group("/user")
 	user.POST("/signup", controllers.Signup)
+	user.POST("/login", controllers.Login)
 
 }
 
