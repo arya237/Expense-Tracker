@@ -12,6 +12,9 @@ func SetupRoutes(engine *gin.Engine){
 	user.POST("/signup", controllers.Signup)
 	user.POST("/login", controllers.Login)
 
+	expense := engine.Group("/expense")
+	expense.POST("/addExpense", controllers.AddExpense)
+
 }
 
 func StartServer(engine *gin.Engine, listenAddress string) error{
