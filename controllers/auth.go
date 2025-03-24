@@ -40,5 +40,14 @@ func Login(c *gin.Context){
 		return 
 	}
 
-	c.JSON(http.StatusOK, user)
+	claims := utils.CreateJwtClaims(user.ID)
+	token, err  := utils.CreateToken(claims)
+	
+	if err != nil{
+		log.Print("can't create jwt claims: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "An unexpected error occurred. Please try again later."})
+		return 
+	} 
+
+	c.JSON(http.StatusOK, gin.H{"user": user, "token":token})
 }
