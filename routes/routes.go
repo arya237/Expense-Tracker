@@ -2,6 +2,7 @@ package routes
 
 import (
 	"expense-tracker/controllers"
+	"expense-tracker/middleware"
 
 	"github.com/gin-gonic/gin"
 )
@@ -9,12 +10,14 @@ import (
 func SetupRoutes(engine *gin.Engine){
 
 	user := engine.Group("/user")
+
 	user.POST("/signup", controllers.Signup)
 	user.POST("/login", controllers.Login)
 
 	expense := engine.Group("/expense")
-	expense.POST("/addExpense", controllers.AddExpense)
+	expense.Use(middleware.Authorization)
 
+	expense.POST("/addExpense", controllers.AddExpense)
 }
 
 func StartServer(engine *gin.Engine, listenAddress string) error{

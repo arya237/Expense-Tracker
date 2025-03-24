@@ -11,6 +11,8 @@ import (
 func AddExpense(c *gin.Context){
 
 	var expense models.Expense
+	userID, _ := c.Get("ID")
+
 	err := c.ShouldBindBodyWithJSON(&expense)
 
 	if err != nil{
@@ -19,5 +21,7 @@ func AddExpense(c *gin.Context){
 		return 
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message":"Expense added successfuly"})
+	expense.UserID = userID
+
+	c.JSON(http.StatusCreated, gin.H{"message":"Expense added successfuly", "expense": expense})
 }	

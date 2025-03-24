@@ -6,7 +6,7 @@ import (
 	"github.com/golang-jwt/jwt"
 )
 
-var jwtKey = []byte("secret_key")
+var JwtKey = []byte("secret_key")
 
 type Claims struct{
 	ID int
@@ -25,7 +25,7 @@ func CreateJwtClaims(id int) *Claims{
 func CreateToken(claims *Claims) (string, error){
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS512, claims)
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(JwtKey)
 
 	if err != nil{
 		return "", err
