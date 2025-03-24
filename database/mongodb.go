@@ -13,13 +13,12 @@ var DB *mongo.Client
 
 func init(){
 
-	DB, err := ConnectToMongodb("mongodb://localhost:27017")  
+	var err error
+	DB, err = ConnectToMongodb("mongodb://localhost:27017")  
 
 	if err != nil{
 		log.Fatal("failed to connect to mongodb: ", err.Error())
 	}
-
-	log.Print(DB)
 }
 
 func ConnectToMongodb(uri string) (*mongo.Client, error){

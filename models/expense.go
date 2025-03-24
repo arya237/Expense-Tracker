@@ -9,6 +9,7 @@ type Expense struct{
 	Title string			`bson:"title"`
 	Category string			`bson:"category"`
 	Date string				`bson:"date"`
-	ExpirationDate string	`bosn:"expire"`
+	Status string 			`bson:"status"`
+	DeadLine string			`bosn:"deadline"`
 	Description string		`bson:"description"`
 }

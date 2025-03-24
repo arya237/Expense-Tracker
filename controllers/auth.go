@@ -1,12 +1,16 @@
 package controllers
 
 import (
+	"expense-tracker/database"
 	"expense-tracker/models"
 	"expense-tracker/utils"
 	"log"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
+
+var id int = 1
 
 func Signup(c *gin.Context){
 	var user models.User
@@ -18,12 +22,32 @@ func Signup(c *gin.Context){
 		return
 	}
 
+	pass, err := utils.HashPassword(user.Password)
+
+	if err != nil{
+		log.Print("can't hashing password: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "please try again"})
+		return
+	}
+
+	user.Password = pass
+	user.ID = id
+	id++
+
+	err = database.AddUserToDatabase(user)
+
+	if err != nil{
+		log.Print("can't insert user in database: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return 
+	}
+
 	c.JSON(http.StatusCreated, gin.H{"message":"You registered successfuly!"})
 }
 
 func Login(c *gin.Context){
-	var user models.User
-	err := c.ShouldBindBodyWithJSON(&user)
+	var income models.User
+	err := c.ShouldBindBodyWithJSON(&income)
 
 	if err != nil{
 		log.Print("error to parsing user: ", err.Error())
@@ -31,16 +55,15 @@ func Login(c *gin.Context){
 		return 
 	}
 	
-	hash, _ := utils.HashPassword("1234")
-	err = utils.CompareHashedPassword(hash, user.Password);
+	user, err := database.GetUserFromDatabase(income)
 
-	if  user.Username != "arya237" || err != nil{
+	if err != nil{
 		log.Print("login was unsuccessful: ", err.Error())
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "username/password is incorrect"})
-		return 
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "login was unsuccessful"})
+		return
 	}
 
-	claims := utils.CreateJwtClaims(user.ID)
+	claims := utils.CreateJwtClaims(income.ID)
 	token, err  := utils.CreateToken(claims)
 	
 	if err != nil{

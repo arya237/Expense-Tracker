@@ -4,7 +4,6 @@ import (
 	"expense-tracker/models"
 	"log"
 	"net/http"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -24,4 +23,15 @@ func AddExpense(c *gin.Context){
 	expense.UserID = userID
 
 	c.JSON(http.StatusCreated, gin.H{"message":"Expense added successfuly", "expense": expense})
-}	
+}
+
+func ListExpense(c *gin.Context){
+	
+	// userID, _ := c.Get("ID")
+	// filter := c.Query("filter")
+	
+	// var ListExpense []models.Expense
+
+	
+
+}
