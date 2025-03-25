@@ -9,15 +9,13 @@ import (
 var JwtKey = []byte("secret_key")
 
 type Claims struct{
-	ID int
 	jwt.StandardClaims
 } 
 
-func CreateJwtClaims(id int) *Claims{
+func CreateJwtClaims() *Claims{
 	expirationDate := time.Now().Add(12 * time.Hour)
 
 	return &Claims{
-		ID: id,
 		StandardClaims: jwt.StandardClaims{ExpiresAt: expirationDate.Unix()},
 	}
 }

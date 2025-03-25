@@ -6,11 +6,11 @@ import (
 	"expense-tracker/utils"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-var id int = 1
 
 func Signup(c *gin.Context){
 	var user models.User
@@ -31,15 +31,19 @@ func Signup(c *gin.Context){
 	}
 
 	user.Password = pass
-	user.ID = id
-	id++
 
 	err = database.AddUserToDatabase(user)
 
 	if err != nil{
-		log.Print("can't insert user in database: ", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return 
+		if strings.Contains(err.Error(),"duplicate key"){
+			c.JSON(http.StatusConflict, gin.H{"error":"this username already exists"})
+			return
+		} else{
+
+			log.Print("can't insert user in database: ", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return 
+		}
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message":"You registered successfuly!"})
@@ -59,11 +63,11 @@ func Login(c *gin.Context){
 
 	if err != nil{
 		log.Print("login was unsuccessful: ", err.Error())
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "login was unsuccessful"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
-	claims := utils.CreateJwtClaims(income.ID)
+	claims := utils.CreateJwtClaims()
 	token, err  := utils.CreateToken(claims)
 	
 	if err != nil{

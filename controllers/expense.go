@@ -1,16 +1,18 @@
 package controllers
 
 import (
+	"expense-tracker/database"
 	"expense-tracker/models"
 	"log"
 	"net/http"
+
 	"github.com/gin-gonic/gin"
 )
 
 func AddExpense(c *gin.Context){
 
 	var expense models.Expense
-	userID, _ := c.Get("ID")
+	username := c.Query("username")
 
 	err := c.ShouldBindBodyWithJSON(&expense)
 
@@ -20,7 +22,15 @@ func AddExpense(c *gin.Context){
 		return 
 	}
 
-	expense.UserID = userID
+	expense.UserID = username
+
+	err = database.AddExpenseToDatabase(expense)
+	
+	if err != nil{
+		log.Print("can't add expense to database: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error":err.Error()})
+		return
+	}
 
 	c.JSON(http.StatusCreated, gin.H{"message":"Expense added successfuly", "expense": expense})
 }

@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/net/context"
 )
 
@@ -17,7 +19,19 @@ func AddUserToDatabase(u models.User) error {
 	defer cancel()
 	
 	collection := DB.Database("expense_tracker").Collection("users")
-	_, err := collection.InsertOne(ctx, u)
+
+	indexModel := mongo.IndexModel{
+		Keys: bson.M{"username":1},
+		Options: options.Index().SetUnique(true),
+	}
+
+	_, err := collection.Indexes().CreateOne(ctx, indexModel)
+
+	if err != nil{
+		return err
+	}
+
+	_, err = collection.InsertOne(ctx, u)
 
 	if err != nil{
 		return err

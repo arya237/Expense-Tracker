@@ -32,6 +32,5 @@ func Authorization(c *gin.Context){
 		return
 	}
 
-	c.Set("ID", claims.ID)
 	c.Next()
 }
