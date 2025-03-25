@@ -18,6 +18,7 @@ func SetupRoutes(engine *gin.Engine){
 	expense.Use(middleware.Authorization)
 
 	expense.POST("/addExpense", controllers.AddExpense)
+	expense.GET("/listExpense", controllers.ListExpense)
 }
 
 func StartServer(engine *gin.Engine, listenAddress string) error{

@@ -37,11 +37,15 @@ func AddExpense(c *gin.Context){
 
 func ListExpense(c *gin.Context){
 	
-	// userID, _ := c.Get("ID")
-	// filter := c.Query("filter")
+	filter := c.Query("filter")
 	
-	// var ListExpense []models.Expense
+	list, err := database.ListExpense(filter)
 
-	
+	if err != nil{
+		log.Print("can't get list of expense: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return 
+	}
 
+	c.JSON(http.StatusOK, list)
 }
