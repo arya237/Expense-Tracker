@@ -3,7 +3,6 @@ package database
 import (
 	"context"
 	"expense-tracker/models"
-	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -24,7 +23,7 @@ func AddExpenseToDatabase(e models.Expense)error{
 	return nil
 }
 
-func ListExpense(filterTime string) ([]models.Expense, error){
+func ListExpense(filterTime string, username string) ([]models.Expense, error){
 	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
 	defer cancel()
 
@@ -41,10 +40,15 @@ func ListExpense(filterTime string) ([]models.Expense, error){
 		case "lastmonth":{
 			startTime = Time.AddDate(0, -1, 0).Format("2006-01-02")
 		}
+
+		case "last3month":{
+			startTime = Time.AddDate(0, -3, 0).Format("2006-01-02")
+		}
 	}
 
 	filter := bson.M{
 		"date": bson.M{"$gt":startTime},
+		"user_id": username,
 	}
 
 	cursor, err := collection.Find(ctx, filter)

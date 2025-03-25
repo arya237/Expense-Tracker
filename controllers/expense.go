@@ -38,8 +38,9 @@ func AddExpense(c *gin.Context){
 func ListExpense(c *gin.Context){
 	
 	filter := c.Query("filter")
+	username := c.Query("username")
 	
-	list, err := database.ListExpense(filter)
+	list, err := database.ListExpense(filter, username)
 
 	if err != nil{
 		log.Print("can't get list of expense: ", err.Error())
