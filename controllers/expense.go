@@ -50,3 +50,19 @@ func ListExpense(c *gin.Context){
 
 	c.JSON(http.StatusOK, list)
 }
+
+func UpdateExpenseStatus(c *gin.Context){
+
+	expenseID := c.Query("id")
+	status := c.Query("status")
+
+	err := database.UpdateStatus(expenseID, status)
+
+	if err != nil{
+		log.Print("can't update expense: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return 
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Your expense updated successfuly"})
+}

@@ -18,6 +18,7 @@ func SetupRoutes(engine *gin.Engine){
 	expense.Use(middleware.Authorization)
 
 	expense.POST("/addExpense", controllers.AddExpense)
+	expense.GET("/updateExpense", controllers.UpdateExpenseStatus)
 	expense.GET("/listExpense", controllers.ListExpense)
 }
 
