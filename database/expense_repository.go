@@ -3,6 +3,7 @@ package database
 import (
 	"context"
 	"expense-tracker/models"
+	"log"
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -84,8 +85,6 @@ func UpdateStatus(ID string, status string)error{
 		return err 
 	}
 
-
-
 	filter := bson.M{"_id" : objID}
 	update := bson.M{"$set": bson.M{"status": status}}
 
@@ -94,6 +93,31 @@ func UpdateStatus(ID string, status string)error{
 	if err != nil{
 		return err
 	}
+
+	return nil
+}
+
+func DeleteExpenseFromDatabase(ID string)error{
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+
+	collection := DB.Database("expense_tracker").Collection("expenses")
+
+	objID, err := primitive.ObjectIDFromHex(ID)
+
+	if err != nil{
+		return err
+	}
+
+	filter := bson.M{"_id": objID}
+
+	result, err := collection.DeleteOne(ctx, filter)
+
+	if err != nil{
+		return err 
+	}
+
+	log.Print(result)
 
 	return nil
 }

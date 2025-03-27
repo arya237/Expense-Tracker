@@ -66,3 +66,17 @@ func UpdateExpenseStatus(c *gin.Context){
 
 	c.JSON(http.StatusOK, gin.H{"message": "Your expense updated successfuly"})
 }
+
+func DeleteExpense(c *gin.Context){
+	expenseID := c.Query("id")
+
+	err := database.DeleteExpenseFromDatabase(expenseID)
+
+	if err != nil{
+		log.Print("can't delete this expense: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "please try again"})
+		return 
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Your expense deleted successfuly"})
+}
