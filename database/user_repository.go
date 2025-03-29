@@ -63,3 +63,17 @@ func GetUserFromDatabase(u models.User) (*models.User, error) {
 	return &user, nil
 }
 
+func CheckUserNameExist(userName string) bool {
+	ctx, cancel := context.WithTimeout(context.Background(), 5 * time.Second)
+	defer cancel()
+
+	collection := DB.Database("expense_tracker").Collection("users")
+
+	filter := bson.M{"username": userName}
+
+	var user models.User
+	err := collection.FindOne(ctx, filter).Decode(&user)
+
+	return err == nil 
+}
+

@@ -3,13 +3,21 @@ package routes
 import (
 	"expense-tracker/controllers"
 	"expense-tracker/middleware"
+	myValidator "expense-tracker/validator"
 
 	"github.com/gin-gonic/gin"
+	"github.com/gin-gonic/gin/binding"
+	"github.com/go-playground/validator/v10"
 	// "github.com/gin-gonic/gin/binding"
 	// "github.com/go-playground/validator/v10"
 )
 
 func SetupRoutes(engine *gin.Engine){
+
+	if v, ok := binding.Validator.Engine().(*validator.Validate); ok {
+		v.RegisterValidation("validUserName", myValidator.ValidUserName)
+		v.RegisterValidation("future", myValidator.Future)
+	}
 
 	user := engine.Group("/user")
 

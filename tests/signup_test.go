@@ -43,7 +43,7 @@ func TestSignup(t *testing.T){
 		{	
 			name: "duplicate username",
 			payload: map[string]any{
-				"username": "arya237",
+				"username": "arya230",
 				"password": "1234",
 			},
 
@@ -64,7 +64,7 @@ func TestSignup(t *testing.T){
 		{
 			name: "missing password",
 			payload: map[string]any{
-				"username" : "arya237",
+				"username" : "arya230",
 			},
 
 			expectedCode: http.StatusBadRequest,
