@@ -35,7 +35,7 @@ func AddExpense(c *gin.Context){
 	c.JSON(http.StatusCreated, gin.H{"message":"Expense added successfuly", "expense": expense})
 }
 
-func ListExpense(c *gin.Context){
+func ListExpenseByDate(c *gin.Context){
 	
 	filter := c.Query("filter")
 	username := c.Query("username")
@@ -45,6 +45,22 @@ func ListExpense(c *gin.Context){
 	if err != nil{
 		log.Print("can't get list of expense: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return 
+	}
+
+	c.JSON(http.StatusOK, list)
+}
+
+func ListExpenseByDeadLine(c *gin.Context){
+	
+	date := c.Param("date")
+	username := c.Query("username")
+
+	list, err := database.ListExpenseWithDeadLine(date, username)
+
+	if err != nil{
+		log.Print("can't get list of expenses: ", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "please try again!"})
 		return 
 	}
 
