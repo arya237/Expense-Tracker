@@ -1,8 +1,8 @@
 package controllers
 
 import (
-	"expense-tracker/database"
 	"expense-tracker/models"
+	"expense-tracker/repository"
 	"expense-tracker/utils"
 	"log"
 	"net/http"
@@ -11,12 +11,11 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-
-func Signup(c *gin.Context){
+func Signup(c *gin.Context) {
 	var user models.User
 	err := c.ShouldBindBodyWithJSON(&user)
 
-	if err != nil{
+	if err != nil {
 		log.Print("can't parse user: ", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
@@ -24,7 +23,7 @@ func Signup(c *gin.Context){
 
 	pass, err := utils.HashPassword(user.Password)
 
-	if err != nil{
+	if err != nil {
 		log.Print("can't hashing password: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "please try again"})
 		return
@@ -32,49 +31,49 @@ func Signup(c *gin.Context){
 
 	user.Password = pass
 
-	err = database.AddUserToDatabase(user)
+	err = repository.Save(user)
 
-	if err != nil{
-		if strings.Contains(err.Error(),"duplicate key"){
-			c.JSON(http.StatusConflict, gin.H{"error":"this username already exists"})
+	if err != nil {
+		if strings.Contains(err.Error(), "duplicate key") {
+			c.JSON(http.StatusConflict, gin.H{"error": "this username already exists"})
 			return
-		} else{
+		} else {
 
-			log.Print("can't insert user in database: ", err.Error())
+			log.Print("can't insert user in repository: ", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return 
+			return
 		}
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message":"You registered successfuly!"})
+	c.JSON(http.StatusCreated, gin.H{"message": "You registered successfuly!"})
 }
 
-func Login(c *gin.Context){
+func Login(c *gin.Context) {
 	var income models.User
 	err := c.ShouldBindBodyWithJSON(&income)
 
-	if err != nil{
+	if err != nil {
 		log.Print("error to parsing user: ", err.Error())
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return 
+		return
 	}
-	
-	user, err := database.GetUserFromDatabase(income)
 
-	if err != nil{
+	user, err := repository.Get(income)
+
+	if err != nil {
 		log.Print("login was unsuccessful: ", err.Error())
 		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
 		return
 	}
 
 	claims := utils.CreateJwtClaims()
-	token, err  := utils.CreateToken(claims)
-	
-	if err != nil{
+	token, err := utils.CreateToken(claims)
+
+	if err != nil {
 		log.Print("can't create jwt claims: ", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"message": "An unexpected error occurred. Please try again later."})
-		return 
-	} 
+		return
+	}
 
-	c.JSON(http.StatusOK, gin.H{"user": user, "token":token})
+	c.JSON(http.StatusOK, gin.H{"user": user, "token": token})
 }
