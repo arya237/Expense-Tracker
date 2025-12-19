@@ -1,7 +1,8 @@
 package models
 
 type Expense struct {
-	UserID      any    `bson:"user_id" binding:"required,validUserName"`
+	UserID      string `bson:"user_id"`
+	ID          int    `bson:"id" binding:"required"`
 	Title       string `bson:"title" binding:"required"`
 	Category    string `bson:"category" binding:"required"`
 	Date        string `bson:"date" binding:"required"`

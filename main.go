@@ -1,15 +1,8 @@
 package main
 
-import (
-	"expense-tracker/routes"
-	"log"
+import "expense-tracker/cmd"
 
-	"github.com/gin-gonic/gin"
-)
+func main() {
 
-func main(){
-	
-	router := gin.Default()
-	routes.SetupRoutes(router)
-	log.Print(routes.StartServer(router, ":8080"))
+	cmd.Run()
 }
