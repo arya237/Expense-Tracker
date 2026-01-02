@@ -27,6 +27,18 @@ func RegisterRoutes(group *gin.RouterGroup, expenseHandler *expenseHandler) {
 	group.GET("/list/date", expenseHandler.ListExpenseByDate)
 }
 
+// AutoSave     godoc
+// @Summary     Add a new expense
+// @Description Add a new expense for a user
+// @Tags        Expense
+// @Accept      json
+// @Param   	request body models2.Expense true "Expense info"
+// @Security    BearerAuth
+// @Produce     json
+// @Success     201 {object} models2.Expense
+// @Failure     400 {object} models2.ErrorResponse
+// @Failure     500 {object} models2.ErrorResponse
+// @Router      /api/v1/expense/add [POST]
 func (h *expenseHandler) AddExpense(c *gin.Context) {
 
 	var expense models2.Expense
@@ -58,6 +70,15 @@ func (h *expenseHandler) AddExpense(c *gin.Context) {
 	})
 }
 
+// AutoSave     godoc
+// @Summary     Get list of expenses
+// @Description Get list of expense in a specific time
+// @Tags        Expense
+// @Security    BearerAuth
+// @Produce     json
+// @Success     200 {object} models2.ListExpensesResponse
+// @Failure     500 {object} models2.ErrorResponse
+// @Router      /api/v1/expense/list/date [GET]
 func (h *expenseHandler) ListExpenseByDate(c *gin.Context) {
 
 	date1 := c.Query("date1")
@@ -69,13 +90,25 @@ func (h *expenseHandler) ListExpenseByDate(c *gin.Context) {
 
 	if err != nil {
 		log.Print("can't get list of expense: ", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, models2.ErrorResponse{
+			Error: "An unexpected error has occurred",
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, list)
+	c.JSON(http.StatusOK, models2.ListExpensesResponse{
+		List: list,
+	})
 }
 
+// AutoSave     godoc
+// @Summary     Get list of expenses
+// @Tags        Expense
+// @Security    BearerAuth
+// @Produce     json
+// @Success     200 {object} models2.ListExpensesResponse
+// @Failure     500 {object} models2.ErrorResponse
+// @Router      /api/v1/expense/list [GET]
 func (h *expenseHandler) ListExpense(c *gin.Context) {
 
 	username, _ := c.Get("username")
@@ -91,7 +124,9 @@ func (h *expenseHandler) ListExpense(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, list)
+	c.JSON(http.StatusOK, models2.ListExpensesResponse{
+		List: list,
+	})
 }
 
 //func (h *authHandler) UpdateExpenseStatus(c *gin.Context) {
@@ -110,6 +145,14 @@ func (h *expenseHandler) ListExpense(c *gin.Context) {
 //	c.JSON(http.StatusOK, gin.H{"message": "Your expense updated successfuly"})
 //}
 
+// AutoSave     godoc
+// @Summary     delete an expense
+// @Tags        Expense
+// @Security    BearerAuth
+// @Produce     json
+// @Success     200 {object} models2.DeleteExpenseResponse
+// @Failure     500 {object} models2.ErrorResponse
+// @Router      /api/v1/expense/delete/{userID} [DELETE]
 func (h *expenseHandler) DeleteExpense(c *gin.Context) {
 	expenseID := c.Param("id")
 	username, _ := c.Get("username")
@@ -121,9 +164,13 @@ func (h *expenseHandler) DeleteExpense(c *gin.Context) {
 
 	if err != nil {
 		log.Print("can't delete this expense: ", err.Error())
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "please try again"})
+		c.JSON(http.StatusInternalServerError, models2.ErrorResponse{
+			Error: "please try again",
+		})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Your expense deleted successfuly"})
+	c.JSON(http.StatusOK, models2.DeleteExpenseResponse{
+		Message: "expense deleted successfully",
+	})
 }

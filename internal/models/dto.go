@@ -28,3 +28,11 @@ type ErrorResponse struct {
 type AddExpenseResponse struct {
 	Message string `json:"message"`
 }
+
+type ListExpensesResponse struct {
+	List []*Expense
+}
+
+type DeleteExpenseResponse struct {
+	Message string `json:"message"`
+}

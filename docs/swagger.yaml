@@ -1,0 +1,237 @@
+definitions:
+  models.DeleteExpenseResponse:
+    properties:
+      message:
+        type: string
+    type: object
+  models.ErrorResponse:
+    properties:
+      error:
+        example: error message
+        type: string
+    type: object
+  models.Expense:
+    properties:
+      category:
+        type: string
+      date:
+        type: string
+      description:
+        type: string
+      id:
+        type: integer
+      status:
+        type: string
+      title:
+        type: string
+      userID:
+        type: string
+    required:
+    - category
+    - date
+    - id
+    - status
+    - title
+    type: object
+  models.ListExpensesResponse:
+    properties:
+      list:
+        items:
+          $ref: '#/definitions/models.Expense'
+        type: array
+    type: object
+  models.LoginRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.LoginResponse:
+    properties:
+      token:
+        type: string
+      username:
+        type: string
+    type: object
+  models.SignupRequest:
+    properties:
+      password:
+        type: string
+      username:
+        type: string
+    type: object
+  models.SignupResponse:
+    properties:
+      message:
+        type: string
+      token:
+        type: string
+      username:
+        type: string
+    type: object
+info:
+  contact:
+    name: Dev Support
+    url: http://www.swagger.io/support
+  description: Manage user expenses
+  termsOfService: http://swagger.io/terms/
+  title: ExpenseTracker
+paths:
+  /api/v1/auth/login:
+    post:
+      consumes:
+      - application/json
+      description: login a user and generate token for it
+      parameters:
+      - description: Signup info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.LoginRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.LoginResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "401":
+          description: Unauthorized
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: login a user
+      tags:
+      - Auth
+  /api/v1/auth/signup:
+    post:
+      consumes:
+      - application/json
+      description: Register a new user and generate token for it
+      parameters:
+      - description: Signup info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.SignupRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.SignupResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "409":
+          description: Conflict
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      summary: Signup a new user
+      tags:
+      - Auth
+  /api/v1/expense/add:
+    post:
+      consumes:
+      - application/json
+      description: Add a new expense for a user
+      parameters:
+      - description: Expense info
+        in: body
+        name: request
+        required: true
+        schema:
+          $ref: '#/definitions/models.Expense'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Expense'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Add a new expense
+      tags:
+      - Expense
+  /api/v1/expense/delete/{userID}:
+    delete:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.DeleteExpenseResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: delete an expense
+      tags:
+      - Expense
+  /api/v1/expense/list:
+    get:
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ListExpensesResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get list of expenses
+      tags:
+      - Expense
+  /api/v1/expense/list/date:
+    get:
+      description: Get list of expense in a specific time
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.ListExpensesResponse'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/models.ErrorResponse'
+      security:
+      - BearerAuth: []
+      summary: Get list of expenses
+      tags:
+      - Expense
+securityDefinitions:
+  BearerAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"

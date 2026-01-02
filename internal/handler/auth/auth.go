@@ -23,13 +23,25 @@ func RegisterRoutes(group *gin.RouterGroup, loginHandler *authHandler) {
 	group.POST("/signup", loginHandler.Signup)
 }
 
+// @Summary     Signup a new user
+// @Description Register a new user and generate token for it
+// @Tags        Auth
+// @Accept      json
+// @Produce     json
+// @Param       request body models.SignupRequest true "Signup info"
+// @Success     201 {object} models.SignupResponse
+// @Failure     400 {object} models.ErrorResponse
+// @Failure     409 {object} models.ErrorResponse
+// @Router      /api/v1/auth/signup [post]
 func (h *authHandler) Signup(c *gin.Context) {
 	var req models.SignupRequest
 	err := c.ShouldBindBodyWithJSON(&req)
 
 	if err != nil {
 		log.Print("can't parse user: ", err.Error())
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, models.ErrorResponse{
+			Error: err.Error(),
+		})
 		return
 	}
 
@@ -58,6 +70,18 @@ func (h *authHandler) Signup(c *gin.Context) {
 	})
 }
 
+// AutoSave     godoc
+// @Summary     login a user
+// @Description login a user and generate token for it
+// @Tags        Auth
+// @Accept      json
+// @Param   	request body models.LoginRequest true "Signup info"
+// @Produce     json
+// @Success     200 {object} models.LoginResponse
+// @Failure     400 {object} models.ErrorResponse
+// @Failure     401 {object} models.ErrorResponse
+// @Failure     500 {object} models.ErrorResponse
+// @Router      /api/v1/auth/login [POST]
 func (h *authHandler) Login(c *gin.Context) {
 	var req models.LoginRequest
 	err := c.ShouldBindBodyWithJSON(&req)
